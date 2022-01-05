@@ -620,7 +620,7 @@ sub _multi_expect {
 	if ($timeout_hook) {
 		croak "Unknown timeout_hook type $timeout_hook"
 			unless ( ref($timeout_hook) eq 'CODE'
-			or ref($timeout_hook) eq 'ARRAY' );
+				or ref($timeout_hook) eq 'ARRAY' );
 	}
 
 	foreach my $pat (@params) {
@@ -650,8 +650,8 @@ sub _multi_expect {
 					print STDERR (
 						'  ',
 						defined( $pattern->[0] )
-						? '#' . $pattern->[0] . ': '
-						: '',
+							? '#' . $pattern->[0] . ': '
+							: '',
 						$pattern->[1],
 						" `",
 						_make_readable( $pattern->[2] ),
@@ -759,21 +759,13 @@ sub _multi_expect {
 					} elsif ( $pattern->[1] eq '-re' ) {
 
 						if ($Expect::Multiline_Matching) {
-							@matchlist =
-								( ${*$exp}{exp_Accum}  =~ m/($pattern->[2])/m);
+							@matchlist = (${*$exp}{exp_Accum} =~ m/$pattern->[2]()/m);
+							($match, $before, $after) = ($&, $`, $');
 						} else {
-							@matchlist =
-								( ${*$exp}{exp_Accum} =~ m/($pattern->[2])/);
+							@matchlist = (${*$exp}{exp_Accum} =~ m/$pattern->[2]()/);
+							($match, $before, $after) = ($&, $`, $');
 						}
 						if (@matchlist) {
-
-							# Matching regexp
-							$match  = shift @matchlist;
-							my $start = index ${*$exp}{exp_Accum}, $match;
-							die 'The match could not be found' if $start == -1;
-							$before = substr ${*$exp}{exp_Accum}, 0, $start;
-							$after = substr ${*$exp}{exp_Accum}, $start + length($match);
-
 							${*$exp}{exp_Before} = $before;
 							${*$exp}{exp_Match}  = $match;
 							${*$exp}{exp_After}  = $after;
@@ -814,9 +806,9 @@ sub _multi_expect {
 						if ( $pattern->[3] ) {
 							print STDERR (
 								"Calling hook $pattern->[3]...\r\n",
-								)
+							)
 								if ( ${*$exp}{exp_Exp_Internal}
-								or $Expect::Debug );
+									or $Expect::Debug );
 							if ( $#{$pattern} > 3 ) {
 
 								# call with parameters if given
@@ -828,7 +820,7 @@ sub _multi_expect {
 						if ( $exp_cont and $exp_cont eq exp_continue ) {
 							print STDERR ("Continuing expect, restarting timeout...\r\n")
 								if ( ${*$exp}{exp_Exp_Internal}
-								or $Expect::Debug );
+									or $Expect::Debug );
 							$start_loop_time = time(); # restart timeout count
 							next READLOOP;
 						} elsif ( $exp_cont
@@ -836,7 +828,7 @@ sub _multi_expect {
 						{
 							print STDERR ("Continuing expect...\r\n")
 								if ( ${*$exp}{exp_Exp_Internal}
-								or $Expect::Debug );
+									or $Expect::Debug );
 							next READLOOP;
 						}
 						last READLOOP;
@@ -948,8 +940,8 @@ sub _multi_expect {
 							}
 							if ($ret
 								and (  $ret eq exp_continue
-									or $ret eq exp_continue_timeout )
-								)
+								or $ret eq exp_continue_timeout )
+							)
 							{
 								$exp_cont = $ret;
 							}
@@ -997,7 +989,7 @@ sub _multi_expect {
 
 					$exp_cont = exp_continue
 						if ( exists ${*$exp}{exp_Continue}
-						and ${*$exp}{exp_Continue} );
+							and ${*$exp}{exp_Continue} );
 
 					# Now propagate what we have read to other listeners...
 					$exp->_print_handles($buffer);
@@ -1021,8 +1013,8 @@ sub _multi_expect {
 				${*$exp_matched}{exp_Error} ? 'un' : '',
 				"successfully.",
 				${*$exp_matched}{exp_Error}
-				? "\r\n  Error: ${*$exp_matched}{exp_Error}."
-				: '',
+					? "\r\n  Error: ${*$exp_matched}{exp_Error}."
+					: '',
 				"\r\n"
 			);
 		} else {
@@ -1050,7 +1042,7 @@ sub _multi_expect {
 			${*$exp_matched}{exp_Match_Number}, ${*$exp_matched}{exp_Error},
 			${*$exp_matched}{exp_Match},        ${*$exp_matched}{exp_Before},
 			${*$exp_matched}{exp_After},        $exp_matched,
-			)
+		)
 			: ${*$exp_matched}{exp_Match_Number};
 	}
 
@@ -1257,7 +1249,7 @@ sub interconnect {
 		foreach my $read_handle (@handles) {
 			waitpid( ${*$read_handle}{exp_Pid}, WNOHANG )
 				if ( exists( ${*$read_handle}{exp_Pid} )
-				and ${*$read_handle}{exp_Pid} );
+					and ${*$read_handle}{exp_Pid} );
 			if (    exists( ${*$read_handle}{exp_Pid} )
 				and ( ${*$read_handle}{exp_Pid} )
 				and ( !kill( 0, ${*$read_handle}{exp_Pid} ) ) )
@@ -1269,7 +1261,7 @@ sub interconnect {
 					unless defined( ${ ${*$read_handle}{exp_Function} }{"EOF"} );
 				last CONNECT_LOOP
 					unless &{ ${ ${*$read_handle}{exp_Function} }{"EOF"} }
-					( @{ ${ ${*$read_handle}{exp_Parameters} }{"EOF"} } );
+						( @{ ${ ${*$read_handle}{exp_Parameters} }{"EOF"} } );
 			}
 		}
 
@@ -1323,7 +1315,7 @@ sub interconnect {
 								. _trim_length(
 								undef,
 								_make_readable($escape_sequence)
-								) . "'\r\n";
+							) . "'\r\n";
 							print STDERR "\tMatched by string: '" . _trim_length( undef, _make_readable($match) ) . "'\r\n";
 						}
 
@@ -1347,13 +1339,13 @@ sub interconnect {
 						# More cool syntax. Maybe I should turn these in to objects.
 						last CONNECT_LOOP
 							unless &{ ${ ${*$read_handle}{exp_Function} }{$escape_sequence} }
-							( @{ ${ ${*$read_handle}{exp_Parameters} }{$escape_sequence} } );
+								( @{ ${ ${*$read_handle}{exp_Parameters} }{$escape_sequence} } );
 					}
 				}
 				$nread = 0 unless defined($nread); # Appease perl -w?
 				waitpid( ${*$read_handle}{exp_Pid}, WNOHANG )
 					if ( defined( ${*$read_handle}{exp_Pid} )
-					&& ${*$read_handle}{exp_Pid} );
+						&& ${*$read_handle}{exp_Pid} );
 				if ( $nread == 0 ) {
 					print STDERR "Got EOF reading ${*$read_handle}{exp_Pty_Handle}\r\n"
 						if ${*$read_handle}{"exp_Debug"};
@@ -1361,7 +1353,7 @@ sub interconnect {
 						unless defined( ${ ${*$read_handle}{exp_Function} }{"EOF"} );
 					last CONNECT_LOOP
 						unless &{ ${ ${*$read_handle}{exp_Function} }{"EOF"} }
-						( @{ ${ ${*$read_handle}{exp_Parameters} }{"EOF"} } );
+							( @{ ${ ${*$read_handle}{exp_Parameters} }{"EOF"} } );
 				}
 				last CONNECT_LOOP if ( $nread < 0 ); # This would be an error
 				$read_handle->_print_handles( ${*$read_handle}{exp_Pty_Buffer} );
@@ -1377,7 +1369,7 @@ sub interconnect {
 					unless defined( ${ ${*$read_handle}{exp_Function} }{"EOF"} );
 				last CONNECT_LOOP
 					unless &{ ${ ${*$read_handle}{exp_Function} }{"EOF"} }
-					( @{ ${ ${*$read_handle}{exp_Parameters} }{"EOF"} } );
+						( @{ ${ ${*$read_handle}{exp_Parameters} }{"EOF"} } );
 			}
 		}
 	}
@@ -1770,8 +1762,8 @@ sub _trim_length {
 	# purposes) AND debug >= 3, don't trim.
 	return ($string)
 		if (defined($self)
-		and ${*$self}{"exp_Debug"} >= 3
-		and ( !( defined($length) ) ) );
+			and ${*$self}{"exp_Debug"} >= 3
+			and ( !( defined($length) ) ) );
 	my $indicate_truncation = ($length ? '' : '...');
 	$length ||= 1021;
 	return $string if $length >= length $string;

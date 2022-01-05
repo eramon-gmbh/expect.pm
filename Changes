@@ -1,5 +1,9 @@
 Revision history for CPAN module Expect
 
+1.36 2022-01-05
+    reverted matching behaviour to v1.25
+    - fixes before/after matches described in https://github.com/jacoby/expect.pm/issues/10
+
 1.35 2017-05-18
     - Added AUTHOR key, listing all maintainers
 
