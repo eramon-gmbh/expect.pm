@@ -1199,6 +1199,7 @@ sub interconnect {
 		# doing something like $temp_mask='' unless defined ($temp_mask)
 		# has no effect whatsoever. This may be a bug in 5.001.
 		$read_mask = $read_mask | $temp_mask;
+		binmode($handle, ':raw');
 	}
 	if ($Expect::Debug) {
 		print STDERR "Read handles:\r\n";
